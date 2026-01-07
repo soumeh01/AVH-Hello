@@ -9,32 +9,36 @@ on:
   schedule:
     - cron:  '0 6 * * 1'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true  # Cancel previous runs on new push
+
 jobs:
   install_build_execute:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        compiler: [ 
+        compiler: [
           {name: AC6,  ext: axf},
           {name: GCC,  ext: elf}
         ]
         target: [
           {type: CM0,       model: FVP_MPS2_Cortex-M0,      uart: fvp_mps2.UART0},
-          {type: CM0plus,   model: FVP_MPS2_Cortex-M0plus,  uart: fvp_mps2.UART0}, 
-          {type: CM3,       model: FVP_MPS2_Cortex-M3,      uart: fvp_mps2.UART0}, 
-          {type: CM4,       model: FVP_MPS2_Cortex-M4,      uart: fvp_mps2.UART0}, 
-          {type: CM4_FP,    model: FVP_MPS2_Cortex-M4,      uart: fvp_mps2.UART0}, 
-          {type: CM7,       model: FVP_MPS2_Cortex-M7,      uart: fvp_mps2.UART0}, 
-          {type: CM7_SP,    model: FVP_MPS2_Cortex-M7,      uart: fvp_mps2.UART0}, 
-          {type: CM7_DP,    model: FVP_MPS2_Cortex-M7,      uart: fvp_mps2.UART0}, 
-          {type: CM23,      model: FVP_MPS2_Cortex-M23,     uart: fvp_mps2.UART0}, 
-          {type: CM33,      model: FVP_MPS2_Cortex-M33,     uart: fvp_mps2.UART0}, 
-          {type: CM33_FP,   model: FVP_MPS2_Cortex-M33,     uart: fvp_mps2.UART0}, 
+          {type: CM0plus,   model: FVP_MPS2_Cortex-M0plus,  uart: fvp_mps2.UART0},
+          {type: CM3,       model: FVP_MPS2_Cortex-M3,      uart: fvp_mps2.UART0},
+          {type: CM4,       model: FVP_MPS2_Cortex-M4,      uart: fvp_mps2.UART0},
+          {type: CM4_FP,    model: FVP_MPS2_Cortex-M4,      uart: fvp_mps2.UART0},
+          {type: CM7,       model: FVP_MPS2_Cortex-M7,      uart: fvp_mps2.UART0},
+          {type: CM7_SP,    model: FVP_MPS2_Cortex-M7,      uart: fvp_mps2.UART0},
+          {type: CM7_DP,    model: FVP_MPS2_Cortex-M7,      uart: fvp_mps2.UART0},
+          {type: CM23,      model: FVP_MPS2_Cortex-M23,     uart: fvp_mps2.UART0},
+          {type: CM33,      model: FVP_MPS2_Cortex-M33,     uart: fvp_mps2.UART0},
+          {type: CM33_FP,   model: FVP_MPS2_Cortex-M33,     uart: fvp_mps2.UART0},
           {type: CS300,     model: FVP_Corstone_SSE-300,    uart: mps3_board.uart0},
           {type: CS310,     model: FVP_Corstone_SSE-310,    uart: mps3_board.uart0},
           {type: CS315,     model: FVP_Corstone_SSE-315,    uart: mps4_board.uart0},
-          {type: CS320,     model: FVP_Corstone_SSE-320,    uart: mps4_board.uart0}          
+          {type: CS320,     model: FVP_Corstone_SSE-320,    uart: mps4_board.uart0}
         ]
         build: [ 
           {type: Release},
@@ -43,7 +47,7 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install tools
         uses: ARM-software/cmsis-actions/vcpkg@v1
@@ -78,8 +82,8 @@ jobs:
 
             echo "Checking simulation UART output"
             if [ "$(grep -c "Hello World 100" ./out/Hello/${{ matrix.target.type }}/${{ matrix.build.type }}/${{ matrix.compiler.name }}/fvp_stdout.log)" -eq 1 ]
-            then 
+            then
                  exit 0
-            else 
+            else
                  exit 1
             fi
