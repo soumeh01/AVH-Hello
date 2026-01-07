@@ -34,7 +34,7 @@ static int count = 0;
 
 static void app_main_thread (void *argument) {
   (void)argument;
-
+  printf ("Checkout point - inside Thread\r\n");
   while (1)  {
     printf ("Hello World %d\r\n", count);
     if (count >= 100) printf ("\x04");  // EOT (0x04) stops simulation
@@ -47,8 +47,10 @@ static void app_main_thread (void *argument) {
  * Application initialization
  *---------------------------------------------------------------------------*/
 int app_main (void) {
+  printf ("App Main\r\n");
   osKernelInitialize();                 // Initialize CMSIS-RTOS2
   osThreadNew(app_main_thread, NULL, NULL);
   osKernelStart();                      // Start thread execution
+  printf ("EXIT point - after Kernel Start\r\n");
   return 0;
 }

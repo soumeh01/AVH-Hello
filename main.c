@@ -17,10 +17,12 @@
  * limitations under the License.
  *---------------------------------------------------------------------------*/
 
+#include <stdio.h>
 #include "main.h"
 
 int main (void) {
   stdio_init();                         // Initialize stdio
+  printf("Main: Stdio initialized successfully\r\n");
 
   app_main();                           // Execute Application main
 
